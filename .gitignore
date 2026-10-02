@@ -1,0 +1,14 @@
+# build artifacts (build locally; see README)
+*.exe
+pc-bridge-linux-amd64
+pc-bridge.zip
+
+# python
+__pycache__/
+*.pyc
+
+# runtime state: allowed-dir persistence, keep local
+pc-bridge.allow
+
+# misc
+*.bak
