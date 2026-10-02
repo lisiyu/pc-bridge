@@ -2,6 +2,8 @@
 
 > 背景：Muse 跑在云端虚拟机里，我的代码、编译环境和手机却全在本地 Windows 电脑上。于是在本地装了这样一个只有一个 Python 文件的小桥，把两边接起来——云端的 Muse 通过它读写本地文件、跑编译、借道 hdc 调试手机；云上决策、云下执行，全链路打通。本文记录选型、安全模型和一路上踩的坑。
 
+项目代码：[github.com/lisiyu/pc-bridge](https://github.com/lisiyu/pc-bridge)（Python 版与 Go 版、双击启动脚本、控制端调用小工具都在里面）
+
 ## 一、方案选型：Go → Python
 
 **第一版用 Go 写的**，功能很完整：只监听 Tailscale 网卡、按节点身份鉴权、目录白名单、命令白名单。交叉编译出 `pc-bridge-windows-amd64.exe`，在自己电脑上一点——
