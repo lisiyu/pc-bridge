@@ -53,6 +53,46 @@ bridge> quit                   停桥
 
 Go 版用法类似：`go build -o pc-bridge.exe .` 后 `pc-bridge.exe --allow-node <节点名> --allow-dir <目录> --allow-cmd hdc`，或直接编辑 `run-bridge.bat` 双击运行。
 
+### Linux / Ubuntu
+
+**一键安装（含 systemd 开机自启）：**
+
+```bash
+ALLOW_NODE=<控制端节点名> bash -c "$(curl -fsSL https://raw.githubusercontent.com/lisiyu/pc-bridge/main/install-ubuntu.sh)"
+```
+
+想同时放行写目录和更多命令前缀：
+
+```bash
+ALLOW_NODE=<控制端节点名> ALLOW_WRITE=~/work ALLOW_CMD=hdc,git,go \
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/lisiyu/pc-bridge/main/install-ubuntu.sh)"
+```
+
+脚本会装好 python3/git/curl、装好并登录 Tailscale、把代码拉到 `/opt/pc-bridge`、生成 `pc-bridge.service` 并 `enable --now`，最后做一次 `/health` 检查。装完用 `systemctl status pc-bridge` 看状态，`journalctl -u pc-bridge -f` 看日志。
+
+`.bat` 启动脚本是 Windows 专用的，Ubuntu 上手动起用 `run-bridge.sh`（Python 版）：
+
+```bash
+sudo apt install tailscale python3   # Go 版不需要 python3
+sudo tailscale up                    # 登录同一个 tailnet
+```
+
+```bash
+# 前台运行（Ctrl-C 即断桥），配置写在脚本开头，也可用环境变量覆盖：
+ALLOW_NODE=<控制端节点名> ALLOW_WRITE=~/work ./run-bridge.sh
+```
+
+想开机自启、后台常驻，用附带的 `pc-bridge.service`：
+
+```bash
+sudo cp pc-bridge.service /etc/systemd/system/   # 先按注释改好 User 和 --allow-* 参数
+sudo systemctl daemon-reload
+sudo systemctl enable --now pc-bridge
+journalctl -u pc-bridge -f                       # 看日志
+```
+
+注意：systemd 下没有终端，桥跑在非交互模式（没有 `bridge>` 控制台），改权限要改参数后 `systemctl restart pc-bridge`。
+
 ## 接口一览
 
 ```

@@ -1,0 +1,37 @@
+# pc-bridge.service - systemd unit for pc-bridge on Ubuntu.
+#
+# Install:
+#   1. Copy this repo to /opt/pc-bridge (or edit WorkingDirectory and
+#      ExecStart below to point at wherever you put it).
+#   2. Edit User= and the --allow-* flags to match your machine.
+#   3. sudo cp pc-bridge.service /etc/systemd/system/
+#      sudo systemctl daemon-reload
+#      sudo systemctl enable --now pc-bridge
+#      sudo systemctl status pc-bridge
+#   Logs: journalctl -u pc-bridge -f
+#   Stop: sudo systemctl stop pc-bridge
+#
+# The bridge binds only to the Tailscale interface IP, so it is
+# reachable only from your tailnet, never from the public internet.
+# Under systemd there is no terminal, so the bridge runs in its
+# non-interactive mode (no bridge> console); edit the flags and
+# restart the service to change allowed dirs.
+
+[Unit]
+Description=pc-bridge: let cloud Muse read/write/debug this PC over Tailscale
+After=network-online.target tailscaled.service
+Wants=network-online.target
+Requires=tailscaled.service
+
+[Service]
+Type=simple
+User=your-username
+WorkingDirectory=/opt/pc-bridge
+ExecStart=/usr/bin/python3 /opt/pc-bridge/pc-bridge.py --allow-node your-control-node --allow-dir /home/your-username --allow-write-dir /home/your-username/work --allow-cmd hdc
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
