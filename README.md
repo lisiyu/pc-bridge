@@ -70,6 +70,14 @@ ALLOW_NODE=<控制端节点名> ALLOW_WRITE=~/work ALLOW_CMD=hdc,git,go \
 
 脚本会装好 python3/git/curl、装好并登录 Tailscale、把代码拉到 `/opt/pc-bridge`、生成 `pc-bridge.service` 并 `enable --now`，最后做一次 `/health` 检查。装完用 `systemctl status pc-bridge` 看状态，`journalctl -u pc-bridge -f` 看日志。
 
+**改白名单（一键）：** 桥已经是 systemd 方式装好后，只改命令白名单不用手动改文件：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lisiyu/pc-bridge/main/update-allow-cmd.sh | sudo bash
+```
+
+这个脚本只改 `--allow-cmd` 这一项（默认改成 `hdc,echo,git,go,python,java,javac,ls,cat,uname,systemctl,tailscale,sh,curl,apt-get`），其他配置原样不动；改之前先备份原 service 文件，改完自动 `daemon-reload` + `restart` + 健康检查。想自定义列表就先下载再跑：`ALLOW_CMD="git,echo" sudo bash update-allow-cmd.sh`。
+
 `.bat` 启动脚本是 Windows 专用的，Ubuntu 上手动起用 `run-bridge.sh`（Python 版）：
 
 ```bash

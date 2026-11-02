@@ -172,7 +172,7 @@ if [ -z "${SKIP_SYSTEMD:-}" ]; then
         OK=""
         i=0
         while [ "$i" -lt 5 ]; do
-            if curl -fsS "http://$TS_IP:18743/health" >/dev/null 2>&1; then
+            if curl -fsS --max-time 10 "http://$TS_IP:18743/health" >/dev/null 2>&1; then
                 OK=1
                 break
             fi
